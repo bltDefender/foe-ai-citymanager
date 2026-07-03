@@ -9,7 +9,7 @@ export function mapCategory(entityId: string, type?: string): BuildingCategory {
   if (t === 'street' || id.includes('street') || id.includes('_road') || t.includes('road') || t.includes('lane') || id.endsWith('_lane') || id.includes('alley') || id.includes('path')) {
     return BuildingCategory.Street;
   }
-  if (t === 'main' || id.includes('mainbuilding') || id.includes('town_hall') || id.includes('townhall') || id.includes('cityhall')) {
+  if (t === 'main' || t === 'main_building' || id.includes('mainbuilding') || id.includes('main_building') || id.includes('town_hall') || id.includes('townhall') || id.includes('cityhall')) {
     return BuildingCategory.MainBuilding;
   }
   if (t === 'greatbuilding' || id.includes('greatbuilding') || id.includes('gb_') || id.includes('arcbonus') || id.includes('_arc') || id.includes('alcatraz') || id.includes('chateau') || id.includes('colosseum') || id.includes('notre_dame') || id.includes('hagia') || id.includes('lighthouse_alexandria')) {

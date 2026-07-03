@@ -35,7 +35,7 @@ function mapRoadType(entityId: string): RoadType {
   return RoadType.Unknown;
 }
 
-export function mapEntityToBuilding(entity: FoeHelperEntity, _version: 1 | 2): Building {
+export function mapEntityToBuilding(entity: FoeHelperEntity): Building {
   const category = mapCategory(entity.cityentity_id, entity.type);
   const era = mapEra(entity.era);
 
@@ -65,7 +65,7 @@ export function mapEntityToBuilding(entity: FoeHelperEntity, _version: 1 | 2): B
   };
 }
 
-export function mapEntityToRoad(entity: FoeHelperEntity, _version: 1 | 2): Road {
+export function mapEntityToRoad(entity: FoeHelperEntity): Road {
   return {
     id: makeRoadId(entity.id),
     x: entity.x,

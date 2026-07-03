@@ -1,56 +1,75 @@
 import { z } from 'zod';
 
+const NumericLikeSchema = z.union([z.number(), z.string()]);
+const BooleanLikeSchema = z.union([z.boolean(), z.number(), z.string()]);
+
 export const FoeHelperEntitySchema = z.object({
   id: z.string(),
   cityentity_id: z.string(),
-  x: z.number(),
-  y: z.number(),
-  width: z.number().optional(),
-  height: z.number().optional(),
-  connected: z.number().optional(),
-  needs_road: z.number().optional(),
+  x: NumericLikeSchema,
+  y: NumericLikeSchema,
+  width: NumericLikeSchema.optional(),
+  height: NumericLikeSchema.optional(),
+  length: NumericLikeSchema.optional(),
+  connected: BooleanLikeSchema.optional(),
+  needs_road: BooleanLikeSchema.optional(),
   type: z.string().optional(),
   state: z.string().optional(),
   name: z.string().optional(),
-  level: z.number().optional(),
+  level: NumericLikeSchema.optional(),
   era: z.string().optional(),
   bonus: z.unknown().optional(),
   productions: z.unknown().optional(),
-});
+}).passthrough();
 
 export type FoeHelperEntity = z.infer<typeof FoeHelperEntitySchema>;
 
-export const FoeHelperV1Schema = z.object({
-  version: z.literal(1),
-  playerName: z.string().optional(),
-  era: z.string().optional(),
-  exportDate: z.string().optional(),
-  width: z.number(),
-  height: z.number(),
-  entities: z.array(FoeHelperEntitySchema),
-});
+export const FoeHelperEntityDefinitionSchema = z.object({
+  id: z.string(),
+  name: z.string().optional(),
+  type: z.string().optional(),
+  width: NumericLikeSchema.optional(),
+  length: NumericLikeSchema.optional(),
+  requirements: z.object({
+    street_connection_level: NumericLikeSchema.optional(),
+  }).passthrough().optional(),
+  components: z.object({
+    AllAge: z.object({
+      placement: z.object({
+        size: z.object({
+          x: NumericLikeSchema.optional(),
+          y: NumericLikeSchema.optional(),
+        }).passthrough().optional(),
+      }).passthrough().optional(),
+      streetConnectionRequirement: z.object({
+        requiredLevel: NumericLikeSchema.optional(),
+      }).passthrough().optional(),
+    }).passthrough().optional(),
+    streetConnectionRequirement: z.object({
+      requiredLevel: NumericLikeSchema.optional(),
+    }).passthrough().optional(),
+  }).passthrough().optional(),
+}).passthrough();
 
-export type FoeHelperV1 = z.infer<typeof FoeHelperV1Schema>;
+export type FoeHelperEntityDefinition = z.infer<typeof FoeHelperEntityDefinitionSchema>;
 
-export const FoeHelperV2Schema = z.object({
-  version: z.literal(2),
-  foeHelperVersion: z.string().optional(),
-  exportDate: z.string().optional(),
-  player: z.object({
-    id: z.string().optional(),
-    name: z.string().optional(),
-    era: z.string().optional(),
-    world: z.string().optional(),
-  }).optional(),
-  city: z.object({
-    width: z.number(),
-    height: z.number(),
-    entities: z.array(FoeHelperEntitySchema),
-    roads: z.array(FoeHelperEntitySchema).optional(),
-  }),
-});
+export const FoeHelperUnlockedAreaSchema = z.object({
+  x: NumericLikeSchema,
+  y: NumericLikeSchema,
+  width: NumericLikeSchema.optional(),
+  length: NumericLikeSchema.optional(),
+  height: NumericLikeSchema.optional(),
+}).passthrough();
 
-export type FoeHelperV2 = z.infer<typeof FoeHelperV2Schema>;
+export type FoeHelperUnlockedArea = z.infer<typeof FoeHelperUnlockedAreaSchema>;
+
+export const FoeHelperCurrentExportSchema = z.object({
+  CityMapData: z.record(FoeHelperEntitySchema),
+  CityEntities: z.record(FoeHelperEntityDefinitionSchema),
+  UnlockedAreas: z.array(FoeHelperUnlockedAreaSchema),
+}).passthrough();
+
+export type FoeHelperCurrentExport = z.infer<typeof FoeHelperCurrentExportSchema>;
 
 export function buildingTypeFromEntityId(entityId: string): string {
   const id = entityId.toLowerCase();
@@ -58,7 +77,7 @@ export function buildingTypeFromEntityId(entityId: string): string {
     return 'street';
   }
   if (id.includes('mainbuilding') || id.includes('main_building') || id.includes('townhall') || id.includes('cityhall')) {
-    return 'main';
+    return 'main_building';
   }
   if (id.includes('greatbuilding') || id.includes('gb_') || id.includes('arcbonus') || id.includes('colosseum') || id.includes('notre_dame') || id.includes('hagia') || id.includes('alcatraz') || id.includes('chateau') || id.includes('arc_')) {
     return 'greatbuilding';

@@ -1,118 +1,156 @@
 import { describe, it, expect } from 'vitest';
-import { FoeHelperParser } from '../FoeHelperParser.js';
-import { ParseError, ParseErrorCode } from '../errors/ParseError.js';
-import { BuildingCategory, Era, BuildingState } from '@forgemind/core';
+import { BuildingCategory, Era } from '@forgemind/core';
 import { readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { FoeHelperParser } from '../FoeHelperParser.js';
+import { ParseError, ParseErrorCode } from '../errors/ParseError.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+const currentJson = readFileSync(join(__dirname, 'fixtures/current-export.json'), 'utf-8');
 
-const v1Json = readFileSync(join(__dirname, 'fixtures/v1-export.json'), 'utf-8');
-const v2Json = readFileSync(join(__dirname, 'fixtures/v2-export.json'), 'utf-8');
+function makeBaseExport() {
+  return JSON.parse(currentJson) as {
+    CityMapData: Record<string, Record<string, unknown>>;
+    CityEntities: Record<string, Record<string, unknown>>;
+    UnlockedAreas: Array<Record<string, unknown>>;
+  };
+}
 
-describe('FoeHelperParser - V1', () => {
+describe('FoeHelperParser', () => {
   const parser = new FoeHelperParser();
 
-  it('parses v1 export successfully', () => {
-    const city = parser.parse(v1Json);
-    expect(city).toBeDefined();
-    expect(city.width).toBe(20);
-    expect(city.height).toBe(18);
-    expect(city.owner).toBe('TestPlayer');
-    expect(city.era).toBe(Era.EarlyMiddleAges);
-  });
+  it('imports the current FoE Helper export successfully', () => {
+    const city = parser.parse(currentJson);
 
-  it('separates buildings and roads', () => {
-    const city = parser.parse(v1Json);
-    expect(city.buildings.length).toBeGreaterThan(0);
-    expect(city.roads.length).toBeGreaterThan(0);
-  });
-
-  it('correctly identifies main building', () => {
-    const city = parser.parse(v1Json);
-    const main = city.buildings.find(b => b.id === 'main_1');
-    expect(main).toBeDefined();
-    expect(main?.category).toBe(BuildingCategory.MainBuilding);
-  });
-
-  it('correctly identifies great building', () => {
-    const city = parser.parse(v1Json);
-    const gb = city.buildings.find(b => b.id === 'gb_1');
-    expect(gb).toBeDefined();
-    expect(gb?.category).toBe(BuildingCategory.GreatBuilding);
-  });
-
-  it('correctly identifies residential buildings', () => {
-    const city = parser.parse(v1Json);
-    const res = city.buildings.filter(b => b.category === BuildingCategory.Residential);
-    expect(res.length).toBeGreaterThan(0);
-  });
-
-  it('calculates statistics', () => {
-    const city = parser.parse(v1Json);
-    expect(city.statistics).toBeDefined();
-    expect(city.statistics?.buildingCount).toBeGreaterThan(0);
-    expect(city.statistics?.roadTiles).toBeGreaterThan(0);
-  });
-
-  it('sets building states correctly', () => {
-    const city = parser.parse(v1Json);
-    const res = city.buildings.find(b => b.id === 'res_1');
-    expect(res?.state).toBe(BuildingState.Collecting);
-  });
-});
-
-describe('FoeHelperParser - V2', () => {
-  const parser = new FoeHelperParser();
-
-  it('parses v2 export successfully', () => {
-    const city = parser.parse(v2Json);
-    expect(city).toBeDefined();
-    expect(city.width).toBe(25);
-    expect(city.height).toBe(22);
-    expect(city.owner).toBe('AdvancedPlayer');
+    expect(city.width).toBe(32);
+    expect(city.height).toBe(32);
     expect(city.era).toBe(Era.ModernEra);
+    expect(city.buildings).toHaveLength(7);
+    expect(city.roads).toHaveLength(3);
+    expect(city.metadata.source).toBe('foe-helper-current');
+    expect(city.metadata.availableMapSize).toEqual({ width: 32, height: 32 });
+    expect(city.metadata.unlockedAreas).toHaveLength(4);
+    expect(city.metadata.unlockedCoordinates).toHaveLength(1024);
+    expect(city.metadata.expansionMap).toHaveLength(32);
+    expect(city.metadata.parserWarnings).toEqual([]);
   });
 
-  it('includes roads from dedicated roads array', () => {
-    const city = parser.parse(v2Json);
-    expect(city.roads.length).toBeGreaterThan(0);
-  });
+  it('resolves static entity definitions into canonical buildings', () => {
+    const city = parser.parse(currentJson);
+    const arc = city.buildings.find((building) => building.entityId === 'GreatBuilding_ArcBonus');
 
-  it('identifies great buildings in v2', () => {
-    const city = parser.parse(v2Json);
-    const arc = city.buildings.find(b => b.id === 'gb_arc');
     expect(arc).toBeDefined();
+    expect(arc?.name).toBe('The Arc');
     expect(arc?.category).toBe(BuildingCategory.GreatBuilding);
-    expect(arc?.level).toBe(80);
+    expect(arc?.width).toBe(5);
+    expect(arc?.height).toBe(5);
+    expect(arc?.roadRequired).toBe(true);
   });
 
-  it('sets metadata correctly', () => {
-    const city = parser.parse(v2Json);
-    expect(city.metadata.foeHelperVersion).toBe('1.234.0');
-    expect(city.metadata.playerName).toBe('AdvancedPlayer');
+  it('classifies unknown building types without aborting parsing', () => {
+    const exportData = makeBaseExport();
+    exportData.CityEntities['Mystery_Thing'] = {
+      id: 'Mystery_Thing',
+      name: 'Mystery Thing',
+      type: 'off_grid',
+      width: 2,
+      length: 2,
+    };
+    exportData.CityMapData.mystery_1 = {
+      id: 'mystery_1',
+      cityentity_id: 'Mystery_Thing',
+      x: 20,
+      y: 2,
+      type: 'off_grid',
+    };
+
+    const city = parser.parse(JSON.stringify(exportData));
+    const mystery = city.buildings.find((building) => building.entityId === 'Mystery_Thing');
+
+    expect(mystery?.category).toBe(BuildingCategory.Unknown);
+    expect(city.metadata.parserWarnings).toContain('Unknown building type for Mystery_Thing');
   });
 
-  it('statistics are correct', () => {
-    const city = parser.parse(v2Json);
-    expect(city.statistics?.greatBuildingCount).toBe(2);
+  it('throws MissingRootPropertyError when CityMapData is missing', () => {
+    const exportData = makeBaseExport();
+    delete (exportData as Partial<typeof exportData>).CityMapData;
+
+    expect(() => parser.parse(JSON.stringify(exportData))).toThrow(expect.objectContaining({
+      code: ParseErrorCode.MissingRootProperty,
+    }));
   });
-});
 
-describe('FoeHelperParser - Error Handling', () => {
-  const parser = new FoeHelperParser();
+  it('throws MissingRootPropertyError when CityEntities is missing', () => {
+    const exportData = makeBaseExport();
+    delete (exportData as Partial<typeof exportData>).CityEntities;
 
-  it('throws ParseError for invalid JSON', () => {
+    expect(() => parser.parse(JSON.stringify(exportData))).toThrow(expect.objectContaining({
+      code: ParseErrorCode.MissingRootProperty,
+    }));
+  });
+
+  it('throws MissingRootPropertyError when UnlockedAreas is missing', () => {
+    const exportData = makeBaseExport();
+    delete (exportData as Partial<typeof exportData>).UnlockedAreas;
+
+    expect(() => parser.parse(JSON.stringify(exportData))).toThrow(expect.objectContaining({
+      code: ParseErrorCode.MissingRootProperty,
+    }));
+  });
+
+  it('throws ParseError for malformed JSON', () => {
     expect(() => parser.parse('not json')).toThrow(ParseError);
     expect(() => parser.parse('not json')).toThrow(expect.objectContaining({ code: ParseErrorCode.InvalidJson }));
   });
 
-  it('throws ParseError for unknown version', () => {
-    expect(() => parser.parse('{"version": 99}')).toThrow(ParseError);
+  it('throws DuplicateIdError for duplicate instance ids', () => {
+    const exportData = makeBaseExport();
+    exportData.CityMapData.duplicate_1 = {
+      id: 'dup_1',
+      cityentity_id: 'Residential_ModernEra_Townhouse',
+      x: 2,
+      y: 6,
+      type: 'residential',
+    };
+    exportData.CityMapData.duplicate_2 = {
+      id: 'dup_1',
+      cityentity_id: 'Residential_ModernEra_Apartment',
+      x: 4,
+      y: 6,
+      type: 'residential',
+    };
+
+    expect(() => parser.parse(JSON.stringify(exportData))).toThrow(expect.objectContaining({
+      code: ParseErrorCode.DuplicateId,
+    }));
   });
 
-  it('throws ParseError for invalid schema', () => {
-    expect(() => parser.parse('{"version": 1}')).toThrow(ParseError);
+  it('throws UnknownEntityError when an entity definition is missing', () => {
+    const exportData = makeBaseExport();
+    exportData.CityMapData.unknown_1 = {
+      id: 'unknown_1',
+      cityentity_id: 'Missing_Definition',
+      x: 1,
+      y: 1,
+    };
+
+    expect(() => parser.parse(JSON.stringify(exportData))).toThrow(expect.objectContaining({
+      code: ParseErrorCode.UnknownEntity,
+    }));
+  });
+
+  it('parses an empty city', () => {
+    const city = parser.parse(JSON.stringify({
+      CityMapData: {},
+      CityEntities: {},
+      UnlockedAreas: [],
+    }));
+
+    expect(city.width).toBe(0);
+    expect(city.height).toBe(0);
+    expect(city.buildings).toHaveLength(0);
+    expect(city.roads).toHaveLength(0);
+    expect(city.statistics?.tileCount).toBe(0);
   });
 });
