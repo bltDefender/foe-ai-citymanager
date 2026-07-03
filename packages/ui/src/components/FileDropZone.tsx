@@ -2,24 +2,48 @@ import React, { useCallback, useRef, useState } from 'react';
 
 interface FileDropZoneProps {
   readonly onFile: (file: File, content: string) => void;
+  readonly onError?: (error: string) => void;
   readonly accept?: string;
   readonly label?: string;
   readonly disabled?: boolean;
 }
 
+function readingStatusText(progress: number): string {
+  if (progress === 0) return 'Reading file\u2026';
+  if (progress < 100) return `Reading\u2026 ${progress}%`;
+  return 'Done reading\u2026';
+}
+
 export function FileDropZone({
   onFile,
+  onError,
   accept = '.json,application/json',
   label = 'Drop a JSON file here, or click to browse',
   disabled = false,
 }: FileDropZoneProps): React.ReactElement {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
 
   const processFile = useCallback(
     (file: File) => {
+      setIsLoading(true);
+      setProgress(0);
       const reader = new FileReader();
+      reader.onprogress = (event) => {
+        if (event.lengthComputable) {
+          setProgress(Math.round((event.loaded / event.total) * 100));
+        }
+      };
+      reader.onerror = () => {
+        const message = reader.error?.message ?? 'Failed to read file';
+        setIsLoading(false);
+        setProgress(0);
+        onError?.(message);
+      };
       reader.onload = (event) => {
+        setIsLoading(false);
         const content = event.target?.result;
         if (typeof content === 'string') {
           onFile(file, content);
@@ -27,26 +51,26 @@ export function FileDropZone({
       };
       reader.readAsText(file);
     },
-    [onFile],
+    [onFile, onError],
   );
 
   const handleDrop = useCallback(
     (event: React.DragEvent<HTMLDivElement>) => {
       event.preventDefault();
       setIsDragging(false);
-      if (disabled) return;
+      if (disabled || isLoading) return;
       const file = event.dataTransfer.files[0];
       if (file) processFile(file);
     },
-    [disabled, processFile],
+    [disabled, isLoading, processFile],
   );
 
   const handleDragOver = useCallback(
     (event: React.DragEvent<HTMLDivElement>) => {
       event.preventDefault();
-      if (!disabled) setIsDragging(true);
+      if (!disabled && !isLoading) setIsDragging(true);
     },
-    [disabled],
+    [disabled, isLoading],
   );
 
   const handleDragLeave = useCallback(() => {
@@ -54,8 +78,8 @@ export function FileDropZone({
   }, []);
 
   const handleClick = useCallback(() => {
-    if (!disabled) inputRef.current?.click();
-  }, [disabled]);
+    if (!disabled && !isLoading) inputRef.current?.click();
+  }, [disabled, isLoading]);
 
   const handleInputChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -66,10 +90,13 @@ export function FileDropZone({
     [processFile],
   );
 
+  const isInteractive = !disabled && !isLoading;
+
   return (
     <div
       role="button"
-      tabIndex={disabled ? -1 : 0}
+      tabIndex={isInteractive ? 0 : -1}
+      aria-busy={isLoading}
       onClick={handleClick}
       onKeyDown={(event) => {
         if (event.key === 'Enter' || event.key === ' ') handleClick();
@@ -83,16 +110,44 @@ export function FileDropZone({
         borderRadius: 8,
         padding: '32px 16px',
         textAlign: 'center',
-        cursor: disabled ? 'not-allowed' : 'pointer',
+        cursor: isInteractive ? 'pointer' : 'not-allowed',
         background: isDragging ? 'rgba(34,139,230,0.1)' : 'rgba(255,255,255,0.02)',
-        color: disabled ? '#555' : '#adb5bd',
+        color: isInteractive ? '#adb5bd' : '#555',
         transition: 'all 0.2s',
         outline: 'none',
       }}
     >
       <div style={{ fontSize: 32, marginBottom: 8 }}>📁</div>
       <div style={{ fontSize: 14 }}>{label}</div>
-      <div style={{ fontSize: 12, marginTop: 4, color: '#555' }}>Supports: {accept}</div>
+      {isLoading ? (
+        <div style={{ marginTop: 12 }}>
+          {progress > 0 && (
+            <div
+              style={{
+                background: '#333',
+                borderRadius: 4,
+                height: 6,
+                overflow: 'hidden',
+                marginBottom: 4,
+              }}
+            >
+              <div
+                style={{
+                  background: '#228be6',
+                  height: '100%',
+                  width: `${progress}%`,
+                  transition: 'width 0.2s',
+                }}
+              />
+            </div>
+          )}
+          <div style={{ fontSize: 12, color: '#adb5bd' }}>
+            {readingStatusText(progress)}
+          </div>
+        </div>
+      ) : (
+        <div style={{ fontSize: 12, marginTop: 4, color: '#555' }}>Supports: {accept}</div>
+      )}
       <input
         ref={inputRef}
         type="file"
