@@ -52,7 +52,10 @@ export class FoeHelperCurrentAdapter {
     const seenIds = new Set<string>();
 
     for (const instance of Object.values(data.CityMapData)) {
-      const resolvedEntity = this.resolveEntity(instance, data.CityEntities, seenIds, warnings);
+      const resolvedEntity = this.tryResolveEntity(instance, data.CityEntities, seenIds, warnings);
+      if (!resolvedEntity) {
+        continue;
+      }
       if (isRoadEntity(resolvedEntity)) {
         roads.push(mapEntityToRoad(resolvedEntity));
       } else {
@@ -60,7 +63,7 @@ export class FoeHelperCurrentAdapter {
       }
     }
 
-    const expansionData = this.normalizeUnlockedAreas(data.UnlockedAreas);
+    const expansionData = this.normalizeUnlockedAreas(data.UnlockedAreas, warnings);
     const fallbackMapSize = this.getOccupiedMapSize([...buildings, ...roads]);
     const width = expansionData.availableMapSize.width || fallbackMapSize.width;
     const height = expansionData.availableMapSize.height || fallbackMapSize.height;
@@ -153,15 +156,40 @@ export class FoeHelperCurrentAdapter {
     };
   }
 
-  private normalizeUnlockedAreas(unlockedAreas: readonly FoeHelperUnlockedArea[]): ExpansionData {
-    const normalizedAreas = unlockedAreas.map((area, index) => {
+  private tryResolveEntity(
+    instance: FoeHelperEntity,
+    definitions: Record<string, FoeHelperEntityDefinition>,
+    seenIds: Set<string>,
+    warnings: string[],
+  ): FoeHelperEntity | null {
+    try {
+      return this.resolveEntity(instance, definitions, seenIds, warnings);
+    } catch (error) {
+      if (error instanceof ParseError && error.code === ParseErrorCode.InvalidCoordinates) {
+        warnings.push(`Skipped entity ${String(instance.id)} due to invalid coordinates`);
+        return null;
+      }
+      throw error;
+    }
+  }
+
+  private normalizeUnlockedAreas(unlockedAreas: readonly FoeHelperUnlockedArea[], warnings: string[]): ExpansionData {
+    const normalizedAreas = unlockedAreas.flatMap((area, index) => {
       const id = `UnlockedAreas[${index}]`;
-      return {
-        x: this.readNonNegativeInteger(area.x, 'x', id),
-        y: this.readNonNegativeInteger(area.y, 'y', id),
-        width: this.resolveDimension([area.width], 'width', id, 16),
-        height: this.resolveDimension([area.height, area.length], 'height', id, 16),
-      };
+      try {
+        return [{
+          x: this.readNonNegativeInteger(area.x, 'x', id),
+          y: this.readNonNegativeInteger(area.y, 'y', id),
+          width: this.resolveDimension([area.width], 'width', id, 16),
+          height: this.resolveDimension([area.height, area.length], 'height', id, 16),
+        }];
+      } catch (error) {
+        if (error instanceof ParseError && error.code === ParseErrorCode.InvalidCoordinates) {
+          warnings.push(`Skipped unlocked area at index ${index} due to invalid coordinates`);
+          return [];
+        }
+        throw error;
+      }
     });
 
     const width = normalizedAreas.reduce((max, area) => Math.max(max, area.x + area.width), 0);
