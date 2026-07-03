@@ -8,6 +8,12 @@ interface FileDropZoneProps {
   readonly disabled?: boolean;
 }
 
+function readingStatusText(progress: number): string {
+  if (progress === 0) return 'Reading file\u2026';
+  if (progress < 100) return `Reading\u2026 ${progress}%`;
+  return 'Done reading\u2026';
+}
+
 export function FileDropZone({
   onFile,
   onError,
@@ -136,11 +142,7 @@ export function FileDropZone({
             </div>
           )}
           <div style={{ fontSize: 12, color: '#adb5bd' }}>
-            {progress === 0
-              ? 'Reading file\u2026'
-              : progress < 100
-                ? `Reading\u2026 ${progress}%`
-                : 'Done reading\u2026'}
+            {readingStatusText(progress)}
           </div>
         </div>
       ) : (

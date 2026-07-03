@@ -46,7 +46,7 @@ export function ImportModal({ opened, onClose }: ImportModalProps): React.ReactE
         setIsProcessing(false);
         notifications.show({
           title: 'Import failed',
-          message: String(error),
+          message: error instanceof Error ? error.message : String(error),
           color: 'red',
           autoClose: false,
         });
