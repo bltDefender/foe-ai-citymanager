@@ -4,7 +4,7 @@ const NumericLikeSchema = z.union([z.number(), z.string()]);
 const BooleanLikeSchema = z.union([z.boolean(), z.number(), z.string()]);
 
 export const FoeHelperEntitySchema = z.object({
-  id: z.string(),
+  id: z.coerce.string(),
   cityentity_id: z.string(),
   x: NumericLikeSchema,
   y: NumericLikeSchema,
@@ -14,7 +14,7 @@ export const FoeHelperEntitySchema = z.object({
   connected: BooleanLikeSchema.optional(),
   needs_road: BooleanLikeSchema.optional(),
   type: z.string().optional(),
-  state: z.string().optional(),
+  state: z.unknown().optional(),
   name: z.string().optional(),
   level: NumericLikeSchema.optional(),
   era: z.string().optional(),

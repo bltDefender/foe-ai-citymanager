@@ -31,8 +31,8 @@ function toFlag(value: string | number | boolean | undefined, fallback: boolean)
   return fallback;
 }
 
-function mapBuildingState(state?: string): BuildingState {
-  if (!state) return BuildingState.Unknown;
+function mapBuildingState(state?: unknown): BuildingState {
+  if (!state || typeof state !== 'string') return BuildingState.Unknown;
   const s = state.toLowerCase();
   if (s === 'idle' || s === 'not_motivated') return BuildingState.Idle;
   if (s === 'collecting' || s === 'collection_available') return BuildingState.Collecting;
