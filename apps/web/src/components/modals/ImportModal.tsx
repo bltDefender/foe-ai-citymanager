@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useCallback } from 'react';
-import { Modal, Stack, Text, Button, Group, Textarea, Tabs } from '@mantine/core';
+import { Modal, Stack, Text, Button, Group, Textarea, Tabs, Loader } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { FileDropZone } from '@forgemind/ui';
 import { FoeHelperParser } from '@forgemind/parser';
@@ -13,6 +13,7 @@ interface ImportModalProps {
 export function ImportModal({ opened, onClose }: ImportModalProps): React.ReactElement {
   const [pasteContent, setPasteContent] = useState('');
   const [preview, setPreview] = useState('');
+  const [isProcessing, setIsProcessing] = useState(false);
   const { importCity } = useAppStore();
   const parser = useMemo(() => new FoeHelperParser(), []);
 
@@ -27,14 +28,31 @@ export function ImportModal({ opened, onClose }: ImportModalProps): React.ReactE
     }
   }, [parser]);
 
+  const handleFileError = useCallback((error: string) => {
+    notifications.show({ title: 'File read error', message: error, color: 'red', autoClose: false });
+  }, []);
+
   const handleFile = useCallback((_file: File, content: string) => {
-    const city = handleParse(content);
-    if (city) {
-      importCity(city);
-      notifications.show({ message: `Imported ${city.buildings.length} buildings`, color: 'green' });
-      onClose();
-    }
-  }, [handleParse, importCity, onClose]);
+    setIsProcessing(true);
+    // Defer the blocking parse so the loading indicator renders first
+    setTimeout(() => {
+      try {
+        const city = parser.parse(content);
+        setIsProcessing(false);
+        importCity(city);
+        notifications.show({ message: `Imported ${city.buildings.length} buildings`, color: 'green' });
+        onClose();
+      } catch (error) {
+        setIsProcessing(false);
+        notifications.show({
+          title: 'Import failed',
+          message: String(error),
+          color: 'red',
+          autoClose: false,
+        });
+      }
+    }, 0);
+  }, [parser, importCity, onClose]);
 
   const handleImportPaste = useCallback(() => {
     const city = handleParse(pasteContent);
@@ -55,7 +73,21 @@ export function ImportModal({ opened, onClose }: ImportModalProps): React.ReactE
           </Tabs.List>
 
           <Tabs.Panel value="file" pt="md">
-            <FileDropZone onFile={handleFile} accept=".json,application/json" label="Drop your FoE Helper city export here" />
+            <Stack gap="sm">
+              <FileDropZone
+                onFile={handleFile}
+                onError={handleFileError}
+                accept=".json,application/json"
+                label="Drop your FoE Helper city export here"
+                disabled={isProcessing}
+              />
+              {isProcessing && (
+                <Group justify="center" gap="xs">
+                  <Loader size="xs" />
+                  <Text size="xs" c="dimmed">Parsing city data…</Text>
+                </Group>
+              )}
+            </Stack>
           </Tabs.Panel>
 
           <Tabs.Panel value="paste" pt="md">

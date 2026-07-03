@@ -7,9 +7,15 @@ const mockReadAsText = vi.fn();
 const mockFileReader: {
   readAsText: typeof mockReadAsText;
   onload: ((event: ProgressEvent<FileReader>) => void) | null;
+  onerror: ((event: ProgressEvent<FileReader>) => void) | null;
+  onprogress: ((event: ProgressEvent<FileReader>) => void) | null;
+  error: DOMException | null;
 } = {
   readAsText: mockReadAsText,
   onload: null,
+  onerror: null,
+  onprogress: null,
+  error: null,
 };
 
 vi.stubGlobal(
@@ -49,6 +55,48 @@ describe('FileDropZone', () => {
 
     await new Promise((resolve) => setTimeout(resolve, 10));
     expect(mockReadAsText).toHaveBeenCalled();
+  });
+
+  it('calls onError when FileReader fails', async () => {
+    const onFile = vi.fn();
+    const onError = vi.fn();
+    const { container } = render(<FileDropZone onFile={onFile} onError={onError} />);
+
+    const dropZone = container.firstChild as HTMLElement;
+    const file = new File(['{}'], 'city.json', { type: 'application/json' });
+
+    mockReadAsText.mockImplementation(function (this: typeof mockFileReader) {
+      setTimeout(() => {
+        if (this.onerror) {
+          this.onerror({} as ProgressEvent<FileReader>);
+        }
+      }, 0);
+    });
+
+    fireEvent.drop(dropZone, { dataTransfer: { files: [file] } });
+
+    await new Promise((resolve) => setTimeout(resolve, 10));
+    expect(onError).toHaveBeenCalledWith('Failed to read file');
+    expect(onFile).not.toHaveBeenCalled();
+  });
+
+  it('shows reading indicator while file is being loaded', async () => {
+    const onFile = vi.fn();
+    const { container, getByText } = render(<FileDropZone onFile={onFile} />);
+
+    const dropZone = container.firstChild as HTMLElement;
+    const file = new File(['{}'], 'city.json', { type: 'application/json' });
+
+    // Do not resolve onload immediately so we can inspect the loading state
+    mockReadAsText.mockImplementation(() => { /* pending */ });
+
+    fireEvent.drop(dropZone, { dataTransfer: { files: [file] } });
+
+    // Component should show the "Reading file…" indicator
+    expect(getByText('Reading file\u2026')).toBeTruthy();
+    // Drop zone should be non-interactive while loading
+    expect(dropZone.getAttribute('tabIndex')).toBe('-1');
+    expect(dropZone.getAttribute('aria-busy')).toBe('true');
   });
 
   it('is accessible with keyboard', () => {
