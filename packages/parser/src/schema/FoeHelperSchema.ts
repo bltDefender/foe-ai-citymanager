@@ -6,8 +6,8 @@ const BooleanLikeSchema = z.union([z.boolean(), z.number(), z.string()]);
 export const FoeHelperEntitySchema = z.object({
   id: z.coerce.string(),
   cityentity_id: z.string(),
-  x: NumericLikeSchema,
-  y: NumericLikeSchema,
+  x: NumericLikeSchema.optional(),
+  y: NumericLikeSchema.optional(),
   width: NumericLikeSchema.optional(),
   height: NumericLikeSchema.optional(),
   length: NumericLikeSchema.optional(),
@@ -54,8 +54,8 @@ export const FoeHelperEntityDefinitionSchema = z.object({
 export type FoeHelperEntityDefinition = z.infer<typeof FoeHelperEntityDefinitionSchema>;
 
 export const FoeHelperUnlockedAreaSchema = z.object({
-  x: NumericLikeSchema,
-  y: NumericLikeSchema,
+  x: NumericLikeSchema.optional(),
+  y: NumericLikeSchema.optional(),
   width: NumericLikeSchema.optional(),
   length: NumericLikeSchema.optional(),
   height: NumericLikeSchema.optional(),

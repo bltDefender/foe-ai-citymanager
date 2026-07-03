@@ -153,4 +153,40 @@ describe('FoeHelperParser', () => {
     expect(city.roads).toHaveLength(0);
     expect(city.statistics?.tileCount).toBe(0);
   });
+
+  it('skips malformed entities with missing coordinates', () => {
+    const exportData = makeBaseExport();
+    exportData.CityMapData.invalid_no_x = {
+      id: 'invalid_no_x',
+      cityentity_id: 'Residential_ModernEra_Townhouse',
+      y: 10,
+      type: 'residential',
+    };
+    exportData.CityMapData.invalid_no_y = {
+      id: 'invalid_no_y',
+      cityentity_id: 'Residential_ModernEra_Townhouse',
+      x: 10,
+      type: 'residential',
+    };
+
+    const city = parser.parse(JSON.stringify(exportData));
+
+    expect(city.buildings).toHaveLength(7);
+    expect(city.metadata.parserWarnings).toContain('Skipped entity invalid_no_x due to invalid coordinates');
+    expect(city.metadata.parserWarnings).toContain('Skipped entity invalid_no_y due to invalid coordinates');
+  });
+
+  it('skips malformed unlocked areas with missing coordinates', () => {
+    const exportData = makeBaseExport();
+    exportData.UnlockedAreas.push({ y: 48, width: 16, length: 16 });
+    exportData.UnlockedAreas.push({ x: 48, width: 16, length: 16 });
+
+    const city = parser.parse(JSON.stringify(exportData));
+
+    expect(city.width).toBe(32);
+    expect(city.height).toBe(32);
+    expect(city.metadata.unlockedAreas).toHaveLength(4);
+    expect(city.metadata.parserWarnings).toContain('Skipped unlocked area at index 4 due to invalid coordinates');
+    expect(city.metadata.parserWarnings).toContain('Skipped unlocked area at index 5 due to invalid coordinates');
+  });
 });
