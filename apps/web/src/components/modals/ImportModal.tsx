@@ -121,7 +121,7 @@ export function ImportModal({ opened, onClose }: ImportModalProps): React.ReactE
         </Tabs>
 
         <Text size="xs" c="dimmed">
-          Supports FoE Helper exports (version 1 and 2). Export from FoE Helper → City → Export JSON.
+          Supports FoE Helper JSON exports. Export from FoE Helper → City → Export JSON.
         </Text>
       </Stack>
     </Modal>

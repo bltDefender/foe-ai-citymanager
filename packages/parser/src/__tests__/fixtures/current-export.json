@@ -1,0 +1,92 @@
+{
+  "CityMapData": {
+    "main_1": { "id": "main_1", "cityentity_id": "MainBuilding_ModernEra", "x": 0, "y": 0, "type": "main_building", "connected": 1 },
+    "res_1": { "id": "res_1", "cityentity_id": "Residential_ModernEra_Townhouse", "x": 6, "y": 0, "type": "residential", "connected": 1, "state": "collecting", "level": 3 },
+    "res_2": { "id": "res_2", "cityentity_id": "Residential_ModernEra_Apartment", "x": 10, "y": 0, "type": "residential", "connected": 1, "state": "idle", "level": 2 },
+    "prod_1": { "id": "prod_1", "cityentity_id": "Production_ModernEra_Factory", "x": 6, "y": 4, "type": "production", "connected": 1, "state": "producing" },
+    "goods_1": { "id": "goods_1", "cityentity_id": "Goods_ModernEra_Rubber", "x": 0, "y": 8, "type": "goods", "connected": 1 },
+    "gb_arc": { "id": "gb_arc", "cityentity_id": "GreatBuilding_ArcBonus", "x": 10, "y": 8, "type": "greatbuilding", "connected": 1, "level": 80 },
+    "culture_1": { "id": "culture_1", "cityentity_id": "Culture_ModernEra_Museum", "x": 18, "y": 0, "type": "culture", "connected": 0 },
+    "road_1": { "id": "road_1", "cityentity_id": "Street_ModernEra_PavedRoad", "x": 5, "y": 0, "type": "street" },
+    "road_2": { "id": "road_2", "cityentity_id": "Street_ModernEra_PavedRoad", "x": 5, "y": 1, "type": "street" },
+    "road_3": { "id": "road_3", "cityentity_id": "Street_ModernEra_PavedRoad", "x": 5, "y": 2, "type": "street" }
+  },
+  "CityEntities": {
+    "MainBuilding_ModernEra": {
+      "id": "MainBuilding_ModernEra",
+      "name": "City Hall",
+      "type": "main_building",
+      "width": 5,
+      "length": 5
+    },
+    "Residential_ModernEra_Townhouse": {
+      "id": "Residential_ModernEra_Townhouse",
+      "name": "Townhouse",
+      "type": "residential",
+      "components": {
+        "AllAge": {
+          "placement": { "size": { "x": 2, "y": 2 } },
+          "streetConnectionRequirement": { "requiredLevel": 1 }
+        }
+      }
+    },
+    "Residential_ModernEra_Apartment": {
+      "id": "Residential_ModernEra_Apartment",
+      "name": "Apartment Block",
+      "type": "residential",
+      "width": 3,
+      "length": 2,
+      "requirements": { "street_connection_level": 1 }
+    },
+    "Production_ModernEra_Factory": {
+      "id": "Production_ModernEra_Factory",
+      "name": "Factory",
+      "type": "production",
+      "components": {
+        "AllAge": {
+          "placement": { "size": { "x": 3, "y": 3 } },
+          "streetConnectionRequirement": { "requiredLevel": 1 }
+        }
+      }
+    },
+    "Goods_ModernEra_Rubber": {
+      "id": "Goods_ModernEra_Rubber",
+      "name": "Rubber Plant",
+      "type": "goods",
+      "width": 4,
+      "length": 3,
+      "requirements": { "street_connection_level": 1 }
+    },
+    "GreatBuilding_ArcBonus": {
+      "id": "GreatBuilding_ArcBonus",
+      "name": "The Arc",
+      "type": "greatbuilding",
+      "components": {
+        "AllAge": {
+          "placement": { "size": { "x": 5, "y": 5 } },
+          "streetConnectionRequirement": { "requiredLevel": 1 }
+        }
+      }
+    },
+    "Culture_ModernEra_Museum": {
+      "id": "Culture_ModernEra_Museum",
+      "name": "Museum",
+      "type": "culture",
+      "width": 4,
+      "length": 3
+    },
+    "Street_ModernEra_PavedRoad": {
+      "id": "Street_ModernEra_PavedRoad",
+      "name": "Paved Road",
+      "type": "street",
+      "width": 1,
+      "length": 1
+    }
+  },
+  "UnlockedAreas": [
+    { "x": 0, "y": 0, "width": 16, "length": 16 },
+    { "x": 16, "y": 0, "width": 16, "length": 16 },
+    { "x": 0, "y": 16, "width": 16, "length": 16 },
+    { "x": 16, "y": 16, "width": 16, "length": 16 }
+  ]
+}

@@ -1,7 +1,11 @@
 export enum ParseErrorCode {
   InvalidJson = 'InvalidJson',
   InvalidSchema = 'InvalidSchema',
-  UnknownVersion = 'UnknownVersion',
+  UnsupportedFormat = 'UnsupportedFormat',
+  MissingRootProperty = 'MissingRootProperty',
+  UnknownEntity = 'UnknownEntity',
+  InvalidCoordinates = 'InvalidCoordinates',
+  DuplicateId = 'DuplicateId',
   MissingField = 'MissingField',
   InvalidValue = 'InvalidValue',
 }
