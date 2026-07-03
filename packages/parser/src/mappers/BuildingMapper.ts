@@ -11,6 +11,26 @@ export function isRoadEntity(entity: FoeHelperEntity): boolean {
   return category === BuildingCategory.Street;
 }
 
+function toNumber(value: string | number | undefined, fallback: number): number {
+  if (typeof value === 'number') return value;
+  if (typeof value === 'string') {
+    const parsed = Number(value);
+    if (Number.isFinite(parsed)) return parsed;
+  }
+  return fallback;
+}
+
+function toFlag(value: string | number | boolean | undefined, fallback: boolean): boolean {
+  if (typeof value === 'boolean') return value;
+  if (typeof value === 'number') return value !== 0;
+  if (typeof value === 'string') {
+    const normalized = value.trim().toLowerCase();
+    if (normalized === '1' || normalized === 'true') return true;
+    if (normalized === '0' || normalized === 'false') return false;
+  }
+  return fallback;
+}
+
 function mapBuildingState(state?: string): BuildingState {
   if (!state) return BuildingState.Unknown;
   const s = state.toLowerCase();
@@ -45,15 +65,15 @@ export function mapEntityToBuilding(entity: FoeHelperEntity): Building {
     name: entity.name ?? entity.cityentity_id,
     type: category,
     category,
-    x: entity.x,
-    y: entity.y,
-    width: entity.width ?? 1,
-    height: entity.height ?? 1,
+    x: toNumber(entity.x, 0),
+    y: toNumber(entity.y, 0),
+    width: toNumber(entity.width, 1),
+    height: toNumber(entity.height, 1),
     rotation: 0,
-    connected: (entity.connected ?? 0) === 1,
-    roadRequired: (entity.needs_road ?? 1) === 1,
+    connected: toFlag(entity.connected, false),
+    roadRequired: toFlag(entity.needs_road, true),
     era,
-    level: entity.level ?? 1,
+    level: toNumber(entity.level, 1),
     state: mapBuildingState(entity.state),
     productions: [],
     bonuses: [],
@@ -68,10 +88,10 @@ export function mapEntityToBuilding(entity: FoeHelperEntity): Building {
 export function mapEntityToRoad(entity: FoeHelperEntity): Road {
   return {
     id: makeRoadId(entity.id),
-    x: entity.x,
-    y: entity.y,
-    width: entity.width ?? 1,
-    height: entity.height ?? 1,
+    x: toNumber(entity.x, 0),
+    y: toNumber(entity.y, 0),
+    width: toNumber(entity.width, 1),
+    height: toNumber(entity.height, 1),
     roadType: mapRoadType(entity.cityentity_id),
     connected: true,
     era: mapEra(entity.era),

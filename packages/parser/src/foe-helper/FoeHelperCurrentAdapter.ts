@@ -12,7 +12,6 @@ import type {
   Statistics,
   UnlockedAreaMetadata,
 } from '@forgemind/core';
-import crypto from 'node:crypto';
 import { ParseError, ParseErrorCode } from '../errors/ParseError.js';
 import { mapEntityToBuilding, mapEntityToRoad, isRoadEntity } from '../mappers/BuildingMapper.js';
 import { mapCategory } from '../mappers/CategoryMapper.js';
@@ -285,14 +284,14 @@ export class FoeHelperCurrentAdapter {
   }
 
   private requiresRoadByCategory(category: BuildingCategory): boolean {
-    return [
+    return ([
       BuildingCategory.MainBuilding,
       BuildingCategory.GreatBuilding,
       BuildingCategory.Residential,
       BuildingCategory.Production,
       BuildingCategory.Goods,
       BuildingCategory.Military,
-    ].includes(category);
+    ] as BuildingCategory[]).includes(category);
   }
 
   private getOccupiedMapSize(items: readonly Pick<Building | Road, 'x' | 'y' | 'width' | 'height'>[]): MapSize {
@@ -362,6 +361,10 @@ export class FoeHelperCurrentAdapter {
   }
 
   private computeChecksum(data: string): string {
-    return crypto.createHash('md5').update(data).digest('hex');
+    let hash = 5381;
+    for (let index = 0; index < data.length; index++) {
+      hash = ((hash << 5) + hash) ^ data.charCodeAt(index);
+    }
+    return (hash >>> 0).toString(16);
   }
 }
