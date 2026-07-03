@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "playerName": "TestPlayer",
+  "era": "EarlyMiddleAges",
+  "exportDate": "2024-01-15T10:00:00.000Z",
+  "width": 20,
+  "height": 18,
+  "entities": [
+    { "id": "main_1", "cityentity_id": "MainBuilding_EarlyMiddleAges", "x": 0, "y": 0, "width": 4, "height": 4, "connected": 1, "needs_road": 0, "type": "main", "state": "idle", "name": "Town Hall", "level": 1 },
+    { "id": "res_1", "cityentity_id": "Residential_EarlyMiddleAges_1", "x": 5, "y": 0, "width": 2, "height": 2, "connected": 1, "needs_road": 1, "type": "residential", "state": "collecting", "name": "Stilt House", "level": 1 },
+    { "id": "res_2", "cityentity_id": "Residential_EarlyMiddleAges_2", "x": 8, "y": 0, "width": 2, "height": 2, "connected": 1, "needs_road": 1, "type": "residential", "state": "idle", "name": "Stilt House", "level": 1 },
+    { "id": "prod_1", "cityentity_id": "Production_EarlyMiddleAges_1", "x": 5, "y": 3, "width": 2, "height": 2, "connected": 1, "needs_road": 1, "type": "production", "state": "producing", "name": "Stonemason", "level": 1 },
+    { "id": "prod_2", "cityentity_id": "Production_EarlyMiddleAges_2", "x": 8, "y": 3, "width": 2, "height": 2, "connected": 1, "needs_road": 1, "type": "production", "state": "idle", "name": "Stonemason", "level": 1 },
+    { "id": "goods_1", "cityentity_id": "Goods_EarlyMiddleAges_Lumber", "x": 0, "y": 5, "width": 3, "height": 3, "connected": 1, "needs_road": 1, "type": "goods", "state": "idle", "name": "Lumber Camp", "level": 1 },
+    { "id": "mil_1", "cityentity_id": "Barracks_EarlyMiddleAges", "x": 4, "y": 6, "width": 3, "height": 3, "connected": 1, "needs_road": 1, "type": "military", "state": "idle", "name": "Barracks", "level": 1 },
+    { "id": "culture_1", "cityentity_id": "Culture_EarlyMiddleAges_Garden", "x": 8, "y": 6, "width": 2, "height": 2, "connected": 0, "needs_road": 0, "type": "culture", "state": "idle", "name": "Hedge Garden", "level": 1 },
+    { "id": "gb_1", "cityentity_id": "GreatBuilding_StMarksCathedral", "x": 0, "y": 9, "width": 5, "height": 4, "connected": 1, "needs_road": 1, "type": "greatbuilding", "state": "idle", "name": "St. Mark's Cathedral", "level": 5 },
+    { "id": "dec_1", "cityentity_id": "Decoration_EarlyMiddleAges_Fountain", "x": 6, "y": 9, "width": 2, "height": 2, "connected": 0, "needs_road": 0, "type": "decoration", "state": "idle", "name": "Fountain", "level": 1 },
+    { "id": "road_1", "cityentity_id": "Street_EarlyMiddleAges", "x": 4, "y": 0, "width": 1, "height": 1, "connected": 1, "needs_road": 0, "type": "street", "state": "idle", "name": "Cobblestone Road" },
+    { "id": "road_2", "cityentity_id": "Street_EarlyMiddleAges", "x": 4, "y": 1, "width": 1, "height": 1, "connected": 1, "needs_road": 0, "type": "street", "state": "idle", "name": "Cobblestone Road" },
+    { "id": "road_3", "cityentity_id": "Street_EarlyMiddleAges", "x": 4, "y": 2, "width": 1, "height": 1, "connected": 1, "needs_road": 0, "type": "street", "state": "idle", "name": "Cobblestone Road" },
+    { "id": "road_4", "cityentity_id": "Street_EarlyMiddleAges", "x": 4, "y": 3, "width": 1, "height": 1, "connected": 1, "needs_road": 0, "type": "street", "state": "idle", "name": "Cobblestone Road" },
+    { "id": "road_5", "cityentity_id": "Street_EarlyMiddleAges", "x": 4, "y": 4, "width": 1, "height": 1, "connected": 1, "needs_road": 0, "type": "street", "state": "idle", "name": "Cobblestone Road" },
+    { "id": "road_6", "cityentity_id": "Street_EarlyMiddleAges", "x": 4, "y": 5, "width": 1, "height": 1, "connected": 1, "needs_road": 0, "type": "street", "state": "idle", "name": "Cobblestone Road" }
+  ]
+}

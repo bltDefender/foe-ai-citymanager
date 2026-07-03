@@ -1,0 +1,37 @@
+{
+  "version": 2,
+  "foeHelperVersion": "1.234.0",
+  "exportDate": "2024-06-01T12:00:00.000Z",
+  "player": {
+    "id": "player_789",
+    "name": "AdvancedPlayer",
+    "era": "ModernEra",
+    "world": "en1"
+  },
+  "city": {
+    "width": 25,
+    "height": 22,
+    "entities": [
+      { "id": "main_1", "cityentity_id": "MainBuilding_ModernEra", "x": 0, "y": 0, "width": 5, "height": 5, "connected": 1, "needs_road": 0, "type": "main", "state": "idle", "name": "City Hall", "level": 1, "era": "ModernEra" },
+      { "id": "res_1", "cityentity_id": "Residential_ModernEra_Townhouse", "x": 6, "y": 0, "width": 2, "height": 2, "connected": 1, "needs_road": 1, "type": "residential", "state": "collecting", "name": "Townhouse", "level": 3, "era": "ModernEra" },
+      { "id": "res_2", "cityentity_id": "Residential_ModernEra_Apartment", "x": 9, "y": 0, "width": 3, "height": 2, "connected": 1, "needs_road": 1, "type": "residential", "state": "idle", "name": "Apartment Block", "level": 2, "era": "ModernEra" },
+      { "id": "res_3", "cityentity_id": "Residential_ModernEra_Villa", "x": 13, "y": 0, "width": 2, "height": 2, "connected": 1, "needs_road": 1, "type": "residential", "state": "motivated", "name": "Residential Villa", "level": 5, "era": "ModernEra" },
+      { "id": "prod_1", "cityentity_id": "Production_ModernEra_Factory", "x": 6, "y": 3, "width": 3, "height": 3, "connected": 1, "needs_road": 1, "type": "production", "state": "producing", "name": "Factory", "level": 2, "era": "ModernEra" },
+      { "id": "prod_2", "cityentity_id": "Production_ModernEra_Manufactory", "x": 10, "y": 3, "width": 2, "height": 3, "connected": 1, "needs_road": 1, "type": "production", "state": "idle", "name": "Manufactory", "level": 1, "era": "ModernEra" },
+      { "id": "goods_1", "cityentity_id": "Goods_ModernEra_Rubber", "x": 0, "y": 6, "width": 4, "height": 3, "connected": 1, "needs_road": 1, "type": "goods", "state": "idle", "name": "Rubber Plant", "level": 3, "era": "ModernEra" },
+      { "id": "goods_2", "cityentity_id": "Goods_ModernEra_Explosives", "x": 5, "y": 6, "width": 4, "height": 3, "connected": 1, "needs_road": 1, "type": "goods", "state": "idle", "name": "Explosives Factory", "level": 2, "era": "ModernEra" },
+      { "id": "mil_1", "cityentity_id": "Barracks_ModernEra", "x": 0, "y": 10, "width": 4, "height": 3, "connected": 1, "needs_road": 1, "type": "military", "state": "idle", "name": "Tank Factory", "level": 4, "era": "ModernEra" },
+      { "id": "gb_arc", "cityentity_id": "GreatBuilding_ArcBonus", "x": 5, "y": 10, "width": 5, "height": 5, "connected": 1, "needs_road": 1, "type": "greatbuilding", "state": "idle", "name": "The Arc", "level": 80, "era": "PostmodernEra" },
+      { "id": "gb_alcatraz", "cityentity_id": "GreatBuilding_Alcatraz", "x": 11, "y": 10, "width": 5, "height": 4, "connected": 1, "needs_road": 1, "type": "greatbuilding", "state": "idle", "name": "Alcatraz", "level": 30, "era": "ProgressiveEra" },
+      { "id": "culture_1", "cityentity_id": "Culture_ModernEra_Museum", "x": 17, "y": 0, "width": 4, "height": 3, "connected": 0, "needs_road": 0, "type": "culture", "state": "idle", "name": "Museum", "level": 1, "era": "ModernEra" },
+      { "id": "dec_1", "cityentity_id": "Decoration_ModernEra_Statue", "x": 17, "y": 4, "width": 2, "height": 2, "connected": 0, "needs_road": 0, "type": "decoration", "state": "idle", "name": "Decorative Statue", "level": 1, "era": "ModernEra" }
+    ],
+    "roads": [
+      { "id": "road_1", "cityentity_id": "Street_ModernEra_PavedRoad", "x": 5, "y": 0, "width": 1, "height": 1, "connected": 1, "needs_road": 0, "type": "street", "name": "Paved Road" },
+      { "id": "road_2", "cityentity_id": "Street_ModernEra_PavedRoad", "x": 5, "y": 1, "width": 1, "height": 1, "connected": 1, "needs_road": 0, "type": "street", "name": "Paved Road" },
+      { "id": "road_3", "cityentity_id": "Street_ModernEra_PavedRoad", "x": 5, "y": 2, "width": 1, "height": 1, "connected": 1, "needs_road": 0, "type": "street", "name": "Paved Road" },
+      { "id": "road_4", "cityentity_id": "Street_ModernEra_PavedRoad", "x": 5, "y": 3, "width": 1, "height": 1, "connected": 1, "needs_road": 0, "type": "street", "name": "Paved Road" },
+      { "id": "road_5", "cityentity_id": "Street_ModernEra_PavedRoad", "x": 5, "y": 4, "width": 1, "height": 1, "connected": 1, "needs_road": 0, "type": "street", "name": "Paved Road" }
+    ]
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "name": "@forgemind/web",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "lint": "eslint src",
+    "type-check": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@forgemind/core": "workspace:*",
+    "@forgemind/parser": "workspace:*",
+    "@forgemind/analyzer": "workspace:*",
+    "@forgemind/renderer": "workspace:*",
+    "@forgemind/llm": "workspace:*",
+    "@forgemind/validator": "workspace:*",
+    "@forgemind/prompt-builder": "workspace:*",
+    "@forgemind/knowledge": "workspace:*",
+    "@forgemind/project": "workspace:*",
+    "@forgemind/plugins": "workspace:*",
+    "@forgemind/ui": "workspace:*",
+    "@mantine/core": "^7.10.0",
+    "@mantine/hooks": "^7.10.0",
+    "@mantine/notifications": "^7.10.0",
+    "@tabler/icons-react": "^3.5.0",
+    "konva": "^9.3.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-konva": "^18.2.10",
+    "react-markdown": "^9.0.1",
+    "zustand": "^4.5.0"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.0.0",
+    "@testing-library/react": "^14.0.0",
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^5.0.0",
+    "jsdom": "^24.0.0",
+    "typescript": "^5.4.5",
+    "vite": "^6.4.3",
+    "vitest": "^3.2.6"
+  }
+}

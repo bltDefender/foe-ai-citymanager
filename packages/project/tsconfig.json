@@ -1,0 +1,17 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "composite": true,
+    "declarationDir": "dist",
+    "lib": ["ES2022"]
+  },
+  "include": ["src"],
+  "references": [
+    { "path": "../core" },
+    { "path": "../llm" },
+    { "path": "../validator" }
+  ],
+  "exclude": ["node_modules", "dist", "src/__tests__"]
+}
