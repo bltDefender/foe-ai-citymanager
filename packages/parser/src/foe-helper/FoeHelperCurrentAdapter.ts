@@ -172,7 +172,7 @@ export class FoeHelperCurrentAdapter {
     for (const area of normalizedAreas) {
       for (let y = area.y; y < area.y + area.height; y++) {
         for (let x = area.x; x < area.x + area.width; x++) {
-          if (!expansionMap[y]?.[x]) {
+          if (!expansionMap[y][x]) {
             expansionMap[y][x] = true;
             unlockedCoordinates.push({ x, y });
           }
@@ -284,14 +284,17 @@ export class FoeHelperCurrentAdapter {
   }
 
   private requiresRoadByCategory(category: BuildingCategory): boolean {
-    return ([
-      BuildingCategory.MainBuilding,
-      BuildingCategory.GreatBuilding,
-      BuildingCategory.Residential,
-      BuildingCategory.Production,
-      BuildingCategory.Goods,
-      BuildingCategory.Military,
-    ] as BuildingCategory[]).includes(category);
+    switch (category) {
+      case BuildingCategory.MainBuilding:
+      case BuildingCategory.GreatBuilding:
+      case BuildingCategory.Residential:
+      case BuildingCategory.Production:
+      case BuildingCategory.Goods:
+      case BuildingCategory.Military:
+        return true;
+      default:
+        return false;
+    }
   }
 
   private getOccupiedMapSize(items: readonly Pick<Building | Road, 'x' | 'y' | 'width' | 'height'>[]): MapSize {
